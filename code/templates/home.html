@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Take Medicine</title>
+    <style>
+        body {
+            background-color: rgb(20, 29, 37);
+            margin: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            align-items: center;
+        }              
+        
+        .pageChange {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pageChange a {
+            color: rgb(213, 219, 255);
+            text-decoration: none;
+            padding: 15px 10px;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            background-color: rgba(255, 255, 255, 0.05);
+            margin-bottom: 2px;
+        }
+
+        .pageChange a:hover {
+            background-color: rgb(50, 58, 66);
+        }
+
+        .content {
+            margin: 0;
+            width: 90vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            align-items: center;
+        } 
+
+        .time {
+            width: 80%;
+            height: 80%;
+            background-color: rgb(8, 18, 26);
+            color: rgb(22, 239, 18);
+            font-size: 18px;
+            text-align: center;
+            padding: 15px 0px 15px 0px;
+            overflow-y: hidden;
+            white-space: pre-line;
+            flex-grow: 1;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="pageChange">
+        <a href="#"style="background-color: #3498db;">記錄中</a>
+        <a href="{{ url_for('search') }}">搜尋記錄</a></div>
+
+    <div class="content">
+        <div class="time-container" style="width: 30%; display: flex; flex-direction: column; height: 90%;">
+            <div class="time" id="log-content">載入中...請稍候...</div>
+        </div>
+        
+        <img src="{{ url_for('cap_in_html') }}" alt="Video Stream">
+    </div>
+</body>
+
+</html>
+
+<script>
+    function refreshTable() {
+        // 發送請求到我們剛寫好的 API
+        fetch('/api/history')
+            .then(response => response.json())
+            .then(data => {
+                const logContent = document.getElementById("log-content");
+
+                // 如果沒有資料，顯示提示
+                if (data.length === 0) {
+                    logContent.innerHTML = '目前沒有記錄。';
+                    return;
+                }
+
+                // 重新建構表格內容
+                let htmlContent = "";
+                data.reverse().forEach(row => {
+                    htmlContent += `
+                        <p style="line-height: 1;">${row.state} at: ${row.time}
+                        <br>${row.auto_finish ? ' (' + row.auto_finish + ')' : ''}</p>
+                    `;
+                });
+
+                // 將產生的 HTML 塞回 logContent
+                logContent.innerHTML = htmlContent;
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    // 設定定時器：每 1 秒 (1000 毫秒) 執行一次 refreshTable
+    setInterval(refreshTable, 1000);
+
+    // 頁面載入完成後先執行一次
+    window.onload = refreshTable;
+</script>
