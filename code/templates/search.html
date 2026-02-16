@@ -206,24 +206,39 @@
             const pagination = document.getElementById("pagination");
             let pgHtml = "";
 
+            // 「上一頁」按鈕
             pgHtml += `
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                    <a class="page-link bg-dark text-white border-secondary" href="#" onclick="changePage(${currentPage - 1})">上一頁</a>
-                </li>`;
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link bg-dark text-white border-secondary" href="javascript:void(0)" onclick="changePage(${currentPage - 1})">上一頁</a>
+        </li>`;
 
+            // 定義要顯示的頁碼範圍
+            const range = 3; // 當前頁前後顯示的筆數
             for (let i = 1; i <= totalPages; i++) {
-                pgHtml += `
+                // 條件：第一頁、最後一頁、或是落在當前頁的前後範圍內
+                if (i === 1 || i === totalPages || (i >= currentPage - range && i <= currentPage + range)) {
+                    pgHtml += `
                 <li class="page-item ${i === currentPage ? 'active' : ''}">
                     <a class="page-link ${i === currentPage ? 'bg-primary border-primary' : 'bg-dark text-white border-secondary'}" 
-                       href="#" onclick="changePage(${i})">${i}</a>
+                       href="javascript:void(0)" onclick="changePage(${i})">${i}</a>
                 </li>`;
-
+                }
+                // 插入省略號的時機：
+                // 1. 當前頁大於 3 且現在處理到第 2 頁時（代表第一頁與範圍間有空隙）
+                // 2. 當前頁小於 總頁數-2 且現在處理到範圍結束後的下一頁時
+                else if (i === 2 && currentPage > 3) {
+                    pgHtml += `<li class="page-item disabled"><span class="page-link bg-dark text-white border-secondary">•••</span></li>`;
+                } else if (i === totalPages - 1 && currentPage < totalPages - 2) {
+                    pgHtml += `<li class="page-item disabled"><span class="page-link bg-dark text-white border-secondary">•••</span></li>`;
+                }
             }
-
+            // 「下一頁」按鈕
             pgHtml += `
-                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
-                    <a class="page-link bg-dark text-white border-secondary" href="#" onclick="changePage(${currentPage + 1})">下一頁</a>
-                </li>`;
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link bg-dark text-white border-secondary" href="javascript:void(0)" onclick="changePage(${currentPage + 1})">下一頁</a>
+        </li>`;
+
+
             pagination.innerHTML = pgHtml;
         }
 
