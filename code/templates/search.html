@@ -119,16 +119,6 @@
 
     <script>
 
-        function sendheartbeat() {
-            fetch('/api/still_alive')
-                .catch(error => console.debug("Heartbeat error:", error));
-        }
-        sendheartbeat();
-        const heartbeatInterval = setInterval(sendheartbeat, 1000);
-
-        let currentPage = 1;
-        const aPageRows = 6;
-
         function resetAndRefresh() {
             currentPage = 1;
             refreshTable();
