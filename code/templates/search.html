@@ -118,6 +118,8 @@
     </div>
 
     <script>
+        let currentPage = 1;
+        const aPageRows = 6;
 
         function resetAndRefresh() {
             currentPage = 1;
@@ -129,6 +131,7 @@
             fetch('/api/history')
                 .then(response => response.json())
                 .then(data => {
+                    console.log("API Data:", data);
                     const logContent = document.getElementById("logContent");
                     const pagination = document.getElementById("pagination");
 
